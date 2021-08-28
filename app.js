@@ -33,11 +33,9 @@ client.on('messageCreate', async msg => {
 
             msg.reply("I hope this helps with your super depression " + cuteDogLink1 + " \n " + cuteDogLink2 + " \n " + cuteDogLink3);
         }
-        if(/^checkZip:/i.test(msg.content)){
-            const zipInfo = await axios.get(`http://api.zippopotam.us/us/${msg.content.substr(8,msg.content.length-1)}`)
-            .then(data => {
-                console.log(`${data.data.places[0]["place name"]} ${data.data.places[0].state}`);
-            })
+        if(/checkZip:/.test(msg.content) && msg.content.length >= 14){
+            const zipInfo = await axios.get(`http://api.zippopotam.us/us/${msg.content.substr(9,msg.content.length-1)}`)
+            .then(data => `${data.data.places[0]["place name"]} ${data.data.places[0].state}`)
 
             msg.reply(zipInfo);
         }
