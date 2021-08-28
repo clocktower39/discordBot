@@ -61,6 +61,13 @@ axios@^0.21.1:
   dependencies:
     follow-redirects "^1.10.0"
 
+bindings@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.5.0.tgz#10353c9e945334bc0511a6d90b38fbc7c9c504df"
+  integrity sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==
+  dependencies:
+    file-uri-to-path "1.0.0"
+
 callsites@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/callsites/-/callsites-3.1.0.tgz#b3630abd8943432f54b3f0519238e33cd7df2f73"
@@ -109,10 +116,23 @@ dotenv@^10.0.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
   integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
 
+file-uri-to-path@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz#553a7b8446ff6f684359c445f1e37a05dacc33dd"
+  integrity sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==
+
 follow-redirects@^1.10.0:
   version "1.14.2"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.2.tgz#cecb825047c00f5e66b142f90fed4f515dec789b"
   integrity sha512-yLR6WaE2lbF0x4K2qE2p9PEXKLDjUjnR/xmjS3wHAYxtlsI9MLLBJUZirAHKzUZDGLxje7w/cXR49WOUo4rbsA==
+
+i2c-bus@^5.1.0:
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/i2c-bus/-/i2c-bus-5.2.2.tgz#0c727f5e99443c5734b4f0e05b45748ba85008fa"
+  integrity sha512-b2y/et08rqggEjqod6QxV0Ng+RlSkZXsdE+E1aZEQBahepZ9uFD9XfA77Y8O9SgyhwfGEn+CNxsw0gvXW1/m4g==
+  dependencies:
+    bindings "^1.5.0"
+    nan "^2.14.2"
 
 is-obj@^2.0.0:
   version "2.0.0"
@@ -136,6 +156,11 @@ mime-types@^2.1.12:
   dependencies:
     mime-db "1.49.0"
 
+nan@^2.14.1, nan@^2.14.2:
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.15.0.tgz#3f34a473ff18e15c1b5626b62903b5ad6e665fee"
+  integrity sha512-8ZtvEnA2c5aYCZYd1cvgdnU6cqwixRoYg70xPLWUws5ORTa/lnw+u4amixRS/Ac5U5mQVgp9pnlSUnbNWFaWZQ==
+
 node-fetch@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
@@ -152,6 +177,21 @@ ow@^0.27.0:
     lodash.isequal "^4.5.0"
     type-fest "^1.2.1"
     vali-date "^1.0.0"
+
+raspberrypi-liquid-crystal@^1.15.0:
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/raspberrypi-liquid-crystal/-/raspberrypi-liquid-crystal-1.15.0.tgz#f3483066d3af12839285ecb02e542d4757f26104"
+  integrity sha512-NpDoKxPKByCTmMThfyndQtHY1XlRI63MiudXhU0abE5B8OwOSkFygZBiOnNoeiQomNYGKa5gTVq9C1prACw7dw==
+  dependencies:
+    i2c-bus "^5.1.0"
+    sleep "^6.1.0"
+
+sleep@^6.1.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/sleep/-/sleep-6.3.0.tgz#c524e0e6d8d2e45d3f14e0ba5650fbe45f2ae876"
+  integrity sha512-+WgYl951qdUlb1iS97UvQ01pkauoBK9ML9I/CMPg41v0Ze4EyMlTgFTDDo32iYj98IYqxIjDMRd+L71lawFfpQ==
+  dependencies:
+    nan "^2.14.1"
 
 ts-mixer@^6.0.0:
   version "6.0.0"

@@ -1,6 +1,10 @@
 require('dotenv').config();
 const { Client, Intents } = require('discord.js');
 const axios = require('axios');
+const sensor = require("node-dht-sensor").promises;
+const LCD = require('raspberrypi-liquid-crystal');
+const lcd = new LCD(1, 0x27, 16, 2);
+lcd.beginSync();
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
@@ -38,6 +42,22 @@ client.on('messageCreate', async msg => {
             .then(data => `${data.data.places[0]["place name"]} ${data.data.places[0].state}`)
 
             msg.reply(zipInfo);
+        }
+        if(/tempCheck/i.test(msg.content)){
+            sensor.read(11, 4)
+            .then((res) => {
+                currentTimeStamp = new Date();
+            
+                lcd.display();
+                lcd.clearSync();
+                lcd.printLineSync(0, `temp: ${(res.temperature*(9/5)+32).toFixed(1)}^F`);
+                lcd.printLineSync(1, `humidity: ${res.humidity.toFixed(1)}%` );
+            
+                botMessage = `${currentTimeStamp.toLocaleTimeString()} ${currentTimeStamp.toLocaleDateString()}\ntemp: ${(res.temperature*(9/5)+32).toFixed(1)}^F \nhumidity: ${res.humidity.toFixed(1)}%\n`;
+        
+                msg.reply(botMessage);
+    
+            },(err)=> console.error(err));
         }
     }
   });
