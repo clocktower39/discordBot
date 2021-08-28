@@ -147,7 +147,7 @@ client.on("messageCreate", async (msg) => {
         "Jersey Mike's",
         "Rosati's"
       ];
-      msg.reply(foodOptions[Math.floor(Math.random() * foodOptions.length-1)]);
+      msg.reply(foodOptions[Math.floor(Math.random() * foodOptions.length)]);
     }
   }
 });
