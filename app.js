@@ -8,6 +8,7 @@ lcd.beginSync();
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
+
 client.on('messageCreate', async msg => {
     const howdyRegex = /howdy/i;
     const btcRegex = /btc|bitcoin/i;
@@ -59,8 +60,28 @@ client.on('messageCreate', async msg => {
     
             },(err)=> console.error(err));
         }
+        if(/hello hello/i.test(msg.content)){
+            msg.reply("https://tenor.com/view/hello-there-hi-there-greetings-gif-9442662");
+        }
+        if(/okay?/i.test(msg.content)){
+            msg.reply("https://tenor.com/view/mmmkay-mr-mackey-south-park-alright-okay-gif-19580399");
+        }
+
+        if(/come over|anyone doing anything|anyone around/i.test(msg.content)){
+            client.channels.cache.get(msg.channelId).send('Kill youself.')
+
+            setTimeout(()=>{
+                client.channels.cache.get(msg.channelId).send('...')
+            },1500)
+            setTimeout(()=>{
+                client.channels.cache.get(msg.channelId).send('dont actually do that..')
+            },3000)
+        }
+        if(/new games/i.test(msg.content)){
+            msg.reply(".");
+        }
     }
-  });
+  });``
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
