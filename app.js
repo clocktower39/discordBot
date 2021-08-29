@@ -37,7 +37,7 @@ client.on("messageCreate", async (msg) => {
         "Sorry that adjective can not be used to describe White Castle"
       );
     }
-    if (/im depressed/i.test(msg.content)) {
+    if (/i'?m depressed/i.test(msg.content)) {
       const cuteDogLink = await axios
         .get("https://dog.ceo/api/breeds/image/random")
         .then((data) => data.data.message);
@@ -128,7 +128,7 @@ client.on("messageCreate", async (msg) => {
         "10/08/2021 - Metroid Dread\n10/22/2021 - Battlefield 2042\n10/29/2021 - Mario Party Superstars\n11/19/2021 - Pokemon Brilliant Diamond\n11/19/2021 - Shining Pearl\n01/28/2022 - Pokemon Legends Arceus"
       );
     }
-    if (/i'm hungry|im hungry|i want food|what should i eat/i.test(msg.content)) {
+    if (/i'?m hungry|i want food|what should i eat/i.test(msg.content)) {
       const foodOptions = [
         "White Castle",
         "Chipotle",
