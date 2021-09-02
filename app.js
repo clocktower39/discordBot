@@ -1,3 +1,4 @@
+const fs = require('fs');
 require("dotenv").config();
 const { Client, Intents } = require("discord.js");
 const axios = require("axios");
@@ -111,18 +112,18 @@ client.on("messageCreate", async (msg) => {
       );
     }
 
-    if (/come over|anyone doing anything|anyone around/i.test(msg.content)) {
-      client.channels.cache.get(msg.channelId).send("Kill youself.");
+    // if (/come over|anyone doing anything|anyone around/i.test(msg.content)) {
+    //   client.channels.cache.get(msg.channelId).send("Kill youself.");
 
-      setTimeout(() => {
-        client.channels.cache.get(msg.channelId).send("...");
-      }, 1500);
-      setTimeout(() => {
-        client.channels.cache
-          .get(msg.channelId)
-          .send("dont actually do that..");
-      }, 3000);
-    }
+    //   setTimeout(() => {
+    //     client.channels.cache.get(msg.channelId).send("...");
+    //   }, 1500);
+    //   setTimeout(() => {
+    //     client.channels.cache
+    //       .get(msg.channelId)
+    //       .send("dont actually do that..");
+    //   }, 3000);
+    // }
     if (/new games/i.test(msg.content)) {
       msg.reply(
         "10/08/2021 - Metroid Dread\n10/22/2021 - Battlefield 2042\n10/29/2021 - Mario Party Superstars\n11/19/2021 - Pokemon Brilliant Diamond\n11/19/2021 - Shining Pearl\n01/28/2022 - Pokemon Legends Arceus"
@@ -149,9 +150,11 @@ client.on("messageCreate", async (msg) => {
       ];
       msg.reply(foodOptions[Math.floor(Math.random() * foodOptions.length)]);
     }
+    if (/who'?s horny/i.test(msg.content)) {
+      msg.channel.send({ files: [{attachment: './img/maxrape.jpeg',name: 'maxrape.jpeg'}] });
+    }
   }
 });
-``;
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
