@@ -7,6 +7,7 @@
     "axios": "^0.21.1",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
+    "node-cron": "^3.0.0",
     "random-puppy": "^1.1.0",
     "raspberrypi-liquid-crystal": "^1.15.0"
   }

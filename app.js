@@ -1,14 +1,16 @@
-const fs = require('fs');
+const fs = require("fs");
 require("dotenv").config();
-const { Client, Intents } = require("discord.js");
+const { Client, Intents, Options } = require("discord.js");
 const axios = require("axios");
 const sensor = require("node-dht-sensor").promises;
 const LCD = require("raspberrypi-liquid-crystal");
 const lcd = new LCD(1, 0x27, 16, 2);
 lcd.beginSync();
+const cron = require("node-cron");
 
 const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+  makeCache: Options.cacheEverything(),
 });
 
 client.on("messageCreate", async (msg) => {
@@ -146,18 +148,49 @@ client.on("messageCreate", async (msg) => {
         "Whataburger",
         "Blaze",
         "Jersey Mike's",
-        "Rosati's"
+        "Rosati's",
       ];
       msg.reply(foodOptions[Math.floor(Math.random() * foodOptions.length)]);
     }
     if (/who'?s horny/i.test(msg.content)) {
-      msg.channel.send({ files: [{attachment: './img/maxrape.jpeg',name: 'maxrape.jpeg'}] });
+      msg.channel.send({
+        files: [
+          {
+            attachment: "./img/unattractivemax.jpeg",
+            name: "unattractivemax.jpeg",
+          },
+        ],
+      });
+    }
+    if (/fell asleep/i.test(msg.content)) {
+      msg.channel.send({
+        files: [
+          { attachment: "./img/fellasleep.jpeg", name: "fellasleep.jpeg" },
+        ],
+      });
+    }
+    if (/12:34/i.test(msg.content)) {
+      msg.channel.send({
+        files: [{ attachment: "./img/1234.jpeg", name: "1234.jpeg" }],
+      });
+    }
+    if (/serious/i.test(msg.content)) {
+      msg.channel.send({
+        files: [{ attachment: "./img/progamer.jpeg", name: "progamer.jpeg" }],
+      });
     }
   }
 });
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
+
+  cron.schedule("56 34 12 * * *", () => {
+    client.channels.cache.get("880886928881373229").send("its that time again");
+  });
+  cron.schedule("00 20 16 * * *", () => {
+    client.channels.cache.get("604850815609339925").send("https://tenor.com/view/south-park-wann-get-high-towelie-gif-9114425");
+  });
 });
 
 client.login(process.env.CLIENT_TOKEN); //login bot using token
