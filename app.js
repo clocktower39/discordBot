@@ -179,6 +179,26 @@ client.on("messageCreate", async (msg) => {
         files: [{ attachment: "./img/progamer.jpeg", name: "progamer.jpeg" }],
       });
     }
+    if (/cheeks/i.test(msg.content)) {
+      msg.channel.send({
+        files: [{ attachment: "./img/cheeks.jpeg", name: "cheeks.jpeg" }],
+      });
+    }
+    if (/goin out|going out|night life/i.test(msg.content)) {
+      msg.channel.send({
+        files: [{ attachment: "./img/goinout.jpeg", name: "goinout.jpeg" }],
+      });
+    }
+    if (/beautiful|beauty/i.test(msg.content)) {
+      msg.channel.send({
+        files: [{ attachment: "./img/beauty.jpeg", name: "beauty.jpeg" }],
+      });
+    }
+    if (/chachi/i.test(msg.content)) {
+      msg.channel.send({
+        files: [{ attachment: "./img/chachi.jpeg", name: "chachi.jpeg" }],
+      });
+    }
   }
 });
 
