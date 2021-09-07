@@ -9,7 +9,7 @@ lcd.beginSync();
 const cron = require("node-cron");
 
 const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS],
   makeCache: Options.cacheEverything(),
 });
 
@@ -179,9 +179,12 @@ client.on("messageCreate", async (msg) => {
         files: [{ attachment: "./img/progamer.jpeg", name: "progamer.jpeg" }],
       });
     }
-    if (/cheeks/i.test(msg.content)) {
+    if (/cheeks|cheeky/i.test(msg.content)) {
       msg.channel.send({
-        files: [{ attachment: "./img/cheeks.jpeg", name: "cheeks.jpeg" }],
+        files: [{ attachment: "./img/cheeksRossi.jpeg", name: "cheeksRossi.jpeg" }],
+      });
+      msg.channel.send({
+        files: [{ attachment: "./img/cheeksMike.jpg", name: "cheeksMike.jpg" }],
       });
     }
     if (/goin out|going out|night life/i.test(msg.content)) {
@@ -199,6 +202,11 @@ client.on("messageCreate", async (msg) => {
         files: [{ attachment: "./img/chachi.jpeg", name: "chachi.jpeg" }],
       });
     }
+    if (/no no blow me|blow me/i.test(msg.content)) {
+      msg.channel.send({
+        files: [{ attachment: "./img/nonoblowme.jpg", name: "nonoblowme.jpg" }],
+      });
+    }
   }
 });
 
@@ -210,6 +218,11 @@ client.on("ready", () => {
   });
   cron.schedule("00 20 16 * * *", () => {
     client.channels.cache.get("604850815609339925").send("https://tenor.com/view/south-park-wann-get-high-towelie-gif-9114425");
+  });
+  cron.schedule("00 06 10 07 09 *", () => {
+    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('596172368397860866')).then(data=>{
+        client.channels.cache.get("604850815609339925").send(`Happy Birthday Michael!!!!!!!! ${data.user}`);
+    })
   });
 });
 
