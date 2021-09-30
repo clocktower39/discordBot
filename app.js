@@ -13,6 +13,17 @@ const client = new Client({
   makeCache: Options.cacheEverything(),
 });
 
+const binaryToText = (str) => {
+
+    let newBin = str.split(" ");
+    let binCode = [];
+    
+    for (i = 0; i < newBin.length; i++) {
+        binCode.push(String.fromCharCode(parseInt(newBin[i], 2)));
+      }
+    return binCode.join("");
+    }
+
 client.on("messageCreate", async (msg) => {
   const howdyRegex = /howdy/i;
   const btcRegex = /btc|bitcoin/i;
@@ -80,6 +91,14 @@ client.on("messageCreate", async (msg) => {
 
       msg.reply(zipInfo);
     }
+    if (/binaryToText:/.test(msg.content) && msg.content.length >= 21) {
+      const text = binaryToText(msg.content.substr(
+            13,
+            msg.content.length - 1
+          ))
+
+      msg.reply(text);
+    }
     if (/tempCheck/i.test(msg.content)) {
       sensor.read(11, 4).then(
         (res) => {
@@ -126,9 +145,10 @@ client.on("messageCreate", async (msg) => {
     //       .send("dont actually do that..");
     //   }, 3000);
     // }
+    
     if (/new games/i.test(msg.content)) {
       msg.reply(
-        "10/08/2021 - Metroid Dread\n10/22/2021 - Battlefield 2042\n10/29/2021 - Mario Party Superstars\n11/19/2021 - Pokemon Brilliant Diamond\n11/19/2021 - Shining Pearl\n01/28/2022 - Pokemon Legends Arceus"
+        "10/08/2021 - Metroid Dread\n10/29/2021 - Mario Party Superstars\n11/09/2021 - Battlefield 2042\n11/19/2021 - Pokemon Brilliant Diamond\n11/19/2021 - Shining Pearl\n01/28/2022 - Pokemon Legends Arceus\nSpring 2022 - Kirby and the Forgotten Land\n"
       );
     }
     if (/i'?m hungry|i want food|what should i eat/i.test(msg.content)) {
@@ -181,16 +201,39 @@ client.on("messageCreate", async (msg) => {
       });
     }
     if (/cheeks|cheeky/i.test(msg.content)) {
+    //   msg.channel.send({
+    //     files: [{ attachment: "./img/cheeksRossi.jpeg", name: "cheeksRossi.jpeg" }],
+    //   });
+    //   msg.channel.send({
+    //     files: [{ attachment: "./img/cheeksMike.jpg", name: "cheeksMike.jpg" }],
+    //   });
       msg.channel.send({
-        files: [{ attachment: "./img/cheeksRossi.jpeg", name: "cheeksRossi.jpeg" }],
-      });
-      msg.channel.send({
-        files: [{ attachment: "./img/cheeksMike.jpg", name: "cheeksMike.jpg" }],
+        files: [{ attachment: "./img/cheeks3.png", name: "cheeks3.png" }],
       });
     }
     if (/goin out|going out|night life/i.test(msg.content)) {
       msg.channel.send({
         files: [{ attachment: "./img/goinout.jpeg", name: "goinout.jpeg" }],
+      });
+    }
+    if (/katz|squad/i.test(msg.content)) {
+      msg.channel.send({
+        files: [{ attachment: "./img/catsquad.png", name: "catsquad.png" }],
+      });
+    }
+    if (/siamese/i.test(msg.content)) {
+      msg.channel.send({
+        files: [{ attachment: "./img/siamese.png", name: "siamese.png" }],
+      });
+    }
+    if (/massive/i.test(msg.content)) {
+      msg.channel.send({
+        files: [{ attachment: "./img/massive.png", name: "massive.png" }],
+      });
+    }
+    if (/block/i.test(msg.content)) {
+      msg.channel.send({
+        files: [{ attachment: "./img/block.png", name: "block.png" }],
       });
     }
     if (/beautiful|beauty/i.test(msg.content)) {
@@ -287,7 +330,7 @@ client.on("ready", () => {
   });
   cron.schedule("00 00 10 10 11 *", () => {
     client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('381967069161455617')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday NicK!!!!!!!! ${data.user}`);
+        client.channels.cache.get("604850815609339925").send(`Happy Birthday Nick!!!!!!!! ${data.user}`);
     })
   });
   cron.schedule("00 00 10 07 06 *", () => {
@@ -313,6 +356,11 @@ client.on("ready", () => {
   cron.schedule("00 00 10 18 12 *", () => {
     client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('304272208358932480')).then(data=>{
         client.channels.cache.get("604850815609339925").send(`Happy Birthday Mishall!!!!!!!! ${data.user}`);
+    })
+  });
+  cron.schedule("00 00 10 11 01 *", () => {
+    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('703817561372098602')).then(data=>{
+        client.channels.cache.get("604850815609339925").send(`Happy Birthday TrashDog!!!!!!!! ${data.user}`);
     })
   });
 });
