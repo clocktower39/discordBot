@@ -9,20 +9,23 @@ lcd.beginSync();
 const cron = require("node-cron");
 
 const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS],
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_MEMBERS,
+  ],
   makeCache: Options.cacheEverything(),
 });
 
 const binaryToText = (str) => {
+  let newBin = str.split(" ");
+  let binCode = [];
 
-    let newBin = str.split(" ");
-    let binCode = [];
-    
-    for (i = 0; i < newBin.length; i++) {
-        binCode.push(String.fromCharCode(parseInt(newBin[i], 2)));
-      }
-    return binCode.join("");
-    }
+  for (i = 0; i < newBin.length; i++) {
+    binCode.push(String.fromCharCode(parseInt(newBin[i], 2)));
+  }
+  return binCode.join("");
+};
 
 client.on("messageCreate", async (msg) => {
   const howdyRegex = /howdy/i;
@@ -39,9 +42,7 @@ client.on("messageCreate", async (msg) => {
         .get("https://api.coindesk.com/v1/bpi/currentprice.json")
         .then((data) => data.data.bpi.USD.rate);
 
-      msg.reply(
-        "$" + btcPrice
-      );
+      msg.reply("$" + btcPrice);
     }
     if (
       /white castle/i.test(msg.content) &&
@@ -92,10 +93,7 @@ client.on("messageCreate", async (msg) => {
       msg.reply(zipInfo);
     }
     if (/binaryToText:/.test(msg.content) && msg.content.length >= 21) {
-      const text = binaryToText(msg.content.substr(
-            13,
-            msg.content.length - 1
-          ))
+      const text = binaryToText(msg.content.substr(13, msg.content.length - 1));
 
       msg.reply(text);
     }
@@ -132,6 +130,52 @@ client.on("messageCreate", async (msg) => {
         "https://tenor.com/view/mmmkay-mr-mackey-south-park-alright-okay-gif-19580399"
       );
     }
+    if (/blackhawks score\?/i.test(msg.content)) {
+      let reply = await axios
+        .get(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=${16}`)
+        .then((data) => {
+          if (data.data.totalGames > 0) {
+            let gameLink = `https://statsapi.web.nhl.com${data.data.dates[0].games[0].link}`;
+            let gameStatus = axios.get(gameLink).then((data) => {
+              let homeTeam = data.data.gameData.teams.home.name;
+              let awayTeam = data.data.gameData.teams.away.name;
+
+              let abstractGameState =
+                data.data.gameData.status.abstractGameState;
+              let gameStart = new Date(data.data.gameData.datetime.dateTime)
+                .toString()
+                .substr(15);
+
+              return `${awayTeam} @ ${homeTeam} - ${abstractGameState}\n${gameStart}`;
+            });
+
+            return gameStatus;
+          } else {
+            const startDate = new Date().toISOString().split("T")[0];
+            const endDate = new Date(
+              new Date().getTime() + 5 * 24 * 60 * 60 * 1000
+            )
+              .toISOString()
+              .split("T")[0];
+              
+              return axios
+              .get(
+                `https://statsapi.web.nhl.com/api/v1/schedule?teamId=16&startDate=${startDate}&endDate=${endDate}`
+              )
+              .then((data) => {
+                let nextGameDate = new Date(
+                  data.data.dates[0].games[0].gameDate
+                ).toString();
+                let homeTeam = data.data.dates[0].games[0].teams.home.team.name;
+                let awayTeam = data.data.dates[0].games[0].teams.away.team.name;
+
+                return `No game today\n\nNext game:\n${awayTeam} @ ${homeTeam}\n${nextGameDate}`;
+              });
+          }
+        });
+      // console.log(reply)
+      msg.reply(reply);
+    }
 
     // if (/come over|anyone doing anything|anyone around/i.test(msg.content)) {
     //   client.channels.cache.get(msg.channelId).send("Kill youself.");
@@ -145,10 +189,10 @@ client.on("messageCreate", async (msg) => {
     //       .send("dont actually do that..");
     //   }, 3000);
     // }
-    
+
     if (/new games/i.test(msg.content)) {
       msg.reply(
-        "10/08/2021 - Metroid Dread\n10/29/2021 - Mario Party Superstars\n11/09/2021 - Battlefield 2042\n11/19/2021 - Pokemon Brilliant Diamond\n11/19/2021 - Shining Pearl\n01/28/2022 - Pokemon Legends Arceus\nSpring 2022 - Kirby and the Forgotten Land\n"
+        "11/19/2021 - Pokemon Brilliant Diamond\n11/19/2021 - Shining Pearl\n12/08/2021 - Halo Infinite\n01/28/2022 - Pokemon Legends Arceus\n01/14/2022 - God of War\n02/25/2022 - Elden Ring\nSpring 2022 - Kirby and the Forgotten Land\n09/22/2022 - Test Drive Unlimied Solar Crown\n11/11/2022 - Starfield\n2022 - Beautiful Light"
       );
     }
     if (/i'?m hungry|i want food|what should i eat/i.test(msg.content)) {
@@ -169,7 +213,7 @@ client.on("messageCreate", async (msg) => {
         "Blaze",
         "Jersey Mike's",
         "Rosati's",
-        "Sorry... Eat at home"
+        "Sorry... Eat at home",
       ];
       msg.reply(foodOptions[Math.floor(Math.random() * foodOptions.length)]);
     }
@@ -201,12 +245,12 @@ client.on("messageCreate", async (msg) => {
       });
     }
     if (/cheeks|cheeky/i.test(msg.content)) {
-    //   msg.channel.send({
-    //     files: [{ attachment: "./img/cheeksRossi.jpeg", name: "cheeksRossi.jpeg" }],
-    //   });
-    //   msg.channel.send({
-    //     files: [{ attachment: "./img/cheeksMike.jpg", name: "cheeksMike.jpg" }],
-    //   });
+      //   msg.channel.send({
+      //     files: [{ attachment: "./img/cheeksRossi.jpeg", name: "cheeksRossi.jpeg" }],
+      //   });
+      //   msg.channel.send({
+      //     files: [{ attachment: "./img/cheeksMike.jpg", name: "cheeksMike.jpg" }],
+      //   });
       msg.channel.send({
         files: [{ attachment: "./img/cheeks3.png", name: "cheeks3.png" }],
       });
@@ -251,8 +295,14 @@ client.on("messageCreate", async (msg) => {
         files: [{ attachment: "./img/nonoblowme.jpg", name: "nonoblowme.jpg" }],
       });
     }
-    if (/zero hour/i.test(msg.content) && msg.author.id !== "563515007204196383" && msg.author.id !== "474394193058463754") {
-      msg.channel.send('https://tenor.com/view/lock-and-load-jesus-christ-south-park-s6e17-red-sleigh-down-gif-22105284');
+    if (
+      /zero hour/i.test(msg.content) &&
+      msg.author.id !== "563515007204196383" &&
+      msg.author.id !== "474394193058463754"
+    ) {
+      msg.channel.send(
+        "https://tenor.com/view/lock-and-load-jesus-christ-south-park-s6e17-red-sleigh-down-gif-22105284"
+      );
     }
   }
 });
@@ -260,108 +310,200 @@ client.on("messageCreate", async (msg) => {
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 
-  cron.schedule("56 34 12 * * *", () => {
-    client.channels.cache.get("880886928881373229").send("its that time again");
-  });
-  cron.schedule("00 20 16 * * *", () => {
-    client.channels.cache.get("604850815609339925").send("https://tenor.com/view/south-park-wann-get-high-towelie-gif-9114425");
-  });
+  //   cron.schedule("00 20 16 * * *", () => {
+  //     client.channels.cache.get("604850815609339925").send("https://tenor.com/view/south-park-wann-get-high-towelie-gif-9114425");
+  //   });
 
   // Birthdays
   cron.schedule("00 00 10 31 08 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('445733650080727061')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Connor!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("445733650080727061"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Connor!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 06 10 07 09 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('596172368397860866')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Michael!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("596172368397860866"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Michael!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 14 10 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('531261983878807553')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Sepsey!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("531261983878807553"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Sepsey!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 37 13 30 10 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('666019364578787328')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Britni!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("666019364578787328"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Britni!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 19 11 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('518898327052484659')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Dalton!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("518898327052484659"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Dalton!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 28 12 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('743344697866453104')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Amy!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("743344697866453104"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Amy!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 13 04 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('761575454263083038')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Maria!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("761575454263083038"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Maria!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("55 20 07 25 04 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('474394193058463754')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Matt!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("474394193058463754"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Matt!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 21 07 25 04 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('563515007204196383')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Jon!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("563515007204196383"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Jon!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 13 08 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('884524352006160414')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Alyssa!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("884524352006160414"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Alyssa!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 30 12 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('707333871783641158')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Zach!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("707333871783641158"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Zach!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 16 11 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('691459930477297674')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Bri!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("691459930477297674"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Bri!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 10 11 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('381967069161455617')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Nick!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("381967069161455617"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Nick!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 07 06 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('539610074289799178')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Rossi!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("539610074289799178"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Rossi!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 09 06 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('633378622010556417')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Fish!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("633378622010556417"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Fish!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 09 05 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('863613130055745577')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Izzy!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("863613130055745577"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Izzy!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 11 05 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('545423011352936468')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Gengenfucker!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("545423011352936468"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Gengenfucker!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 18 12 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('304272208358932480')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday Mishall!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("304272208358932480"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday Mishall!!!!!!!! ${data.user}`);
+      });
   });
   cron.schedule("00 00 10 11 01 *", () => {
-    client.guilds.fetch('474394822937935883').then((res)=> res.members.fetch('703817561372098602')).then(data=>{
-        client.channels.cache.get("604850815609339925").send(`Happy Birthday TrashDog!!!!!!!! ${data.user}`);
-    })
+    client.guilds
+      .fetch("474394822937935883")
+      .then((res) => res.members.fetch("703817561372098602"))
+      .then((data) => {
+        client.channels.cache
+          .get("604850815609339925")
+          .send(`Happy Birthday TrashDog!!!!!!!! ${data.user}`);
+      });
   });
 });
 
