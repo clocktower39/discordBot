@@ -135,6 +135,8 @@ client.on("messageCreate", async (msg) => {
         .get(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=${16}`)
         .then((data) => {
           if (data.data.totalGames > 0) {
+            let returnString = '';
+
             let gameLink = `https://statsapi.web.nhl.com${data.data.dates[0].games[0].link}`;
             let gameStatus = axios.get(gameLink).then((data) => {
               let homeTeam = data.data.gameData.teams.home.name;
@@ -146,7 +148,24 @@ client.on("messageCreate", async (msg) => {
                 .toString()
                 .substr(15);
 
-              return `${awayTeam} @ ${homeTeam} - ${abstractGameState}\n${gameStart}`;
+                if(abstractGameState === "Pre"){
+                  returnString = `${awayTeam} @ ${homeTeam} - ${abstractGameState}\n${gameStart}`;
+                }
+                else if(abstractGameState === "Live"){
+                  let period = data.data.liveData.linescore.currentPeriodOrdinal;
+                  let timeRemaining = data.data.liveData.linescore.currentPeriodTimeRemaining;
+                  let homeScore = data.data.liveData.plays.currentPlay.about.goals.home;
+                  let awayScore = data.data.liveData.plays.currentPlay.about.goals.away;
+
+                  returnString = `${awayTeam} @ ${homeTeam}\nScore: ${awayScore} - ${homeScore}\n${period} period\n${timeRemaining} time remaining`;
+                }
+                else {
+                  let homeScore = data.data.liveData.plays.currentPlay.about.goals.home;
+                  let awayScore = data.data.liveData.plays.currentPlay.about.goals.away;
+
+                  returnString = `${awayTeam} @ ${homeTeam}\nFinal Score: ${awayScore} - ${homeScore}`;
+                }
+              return returnString;
             });
 
             return gameStatus;
@@ -157,8 +176,8 @@ client.on("messageCreate", async (msg) => {
             )
               .toISOString()
               .split("T")[0];
-              
-              return axios
+
+            return axios
               .get(
                 `https://statsapi.web.nhl.com/api/v1/schedule?teamId=16&startDate=${startDate}&endDate=${endDate}`
               )
