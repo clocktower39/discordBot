@@ -249,7 +249,7 @@ function handleFellAsleepCommand(msg) {
 
 // Function to handle the "12:34" command
 function handle1234Command(msg) {
-  if (/trash|garbage/i.test(msg.content)) {
+  if (/trash|garbage|12:34/i.test(msg.content)) {
     msg.channel.send({
       files: [{ attachment: "./img/1234.jpeg", name: "1234.jpeg" }],
     });

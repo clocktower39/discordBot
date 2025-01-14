@@ -41,17 +41,6 @@ client.on("ready", () => {
 });
 
 client.on("voiceStateUpdate", async (oldState, newState) => {
-  const member = newState.member;
-
-  // Fetch the admin member
-  let admin;
-  try {
-    const guild = await client.guilds.fetch("474394822937935883");
-    admin = await guild.members.fetch("474394193058463754");
-  } catch (error) {
-    console.error("Error fetching admin:", error);
-    return; // If fetching the admin fails, exit the function
-  }
 
   let date_time = new Date();
   let date = ("0" + date_time.getDate()).slice(-2);
@@ -62,39 +51,36 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
   let seconds = date_time.getSeconds();
   let printTimestamp = () => `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
 
-  // Check if the user joined a voice channel
-  if (newState.channel) {
-    // Check if the user is in offline or invisible mode
-    if (
-      member.presence &&
-      (member.presence.status === "offline" || member.presence.status === "invisible")
-    ) {
-      // Check if the user is in a voice channel
-      if (newState.guild.voiceStates.cache.get(member.id)) {
-        // Disconnect the user from the voice channel
-        newState.setChannel(null);
+  const member = newState.member;
 
-        try {
-          // Send a direct message to the user
-          await member.send(
-            "You have been disconnected from the voice channel for being offline or invisible."
-          );
-          await admin.user.send(
-            `${member.user.tag} was disconnected from the voice channel for being offline or invisible.`
-          );
-          await client.channels.cache.get("604850815609339925").send(`<@${member.id}> isnt so sneaky and was disconnected from the voice channel for being offline or invisible.`);
+  if (!newState.channel) return; // Exit if the user did not join a voice channel
 
-          console.log(`Sent a direct message to ${member.user.tag} about the disconnection.`);
-        } catch (error) {
-          console.error(`Failed to send a direct message to ${member.user.tag}: ${error.message}`);
-        }
+  try {
+    // Fetch the guild and admin member
+    const guild = await client.guilds.fetch("474394822937935883");
+    const admin = await guild.members.fetch("474394193058463754");
 
-        console.log(
-          `Disconnected ${member.user.tag} from the voice channel for being offline or invisible.`
-        );
-      }
+    // Fetch member presence
+    const fetchedMember = await guild.members.fetch(member.id);
+    const status = fetchedMember.presence?.status;
+
+    if (status === "offline" || status === "invisible") {
+      // Disconnect the user
+      await newState.setChannel(null);
+
+      // Notify the user, admin, and log channel
+      await member.send("You have been disconnected from the voice channel for being offline or invisible.");
+      await admin.user.send(`${member.user.tag} was disconnected for being offline or invisible.`);
+      await client.channels.cache
+        .get("604850815609339925")
+        .send(`<@${member.id}> isn't so sneaky and was disconnected from the voice channel.`);
+      
+      console.log(`Disconnected ${member.user.tag} for being offline or invisible.`);
     }
+  } catch (error) {
+    console.error(`Error processing voiceStateUpdate for ${member.user.tag}:`, error);
   }
 });
+
 
 client.login(process.env.CLIENT_TOKEN); //login bot using token

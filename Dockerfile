@@ -1,23 +1,22 @@
 # Use Node.js 18 on Alpine
 FROM node:18-alpine
 
-# Install everything needed to build native modules, including linux-headers for i2c
-RUN apk add --no-cache python3 make g++ linux-headers
+# Install required packages
+RUN apk add --no-cache python3 make g++ linux-headers tzdata
 
-# Set the working directory inside the container
+# Set timezone to match Arizona Mountain Time
+ENV TZ=America/Phoenix
+RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Set the working directory
 WORKDIR /app
 
-# Copy package files first for better caching
+# Copy and install dependencies
 COPY package.json yarn.lock ./
-
-# Install dependencies using Yarn
 RUN yarn install --frozen-lockfile
 
-# Copy all remaining files into the container
+# Copy all remaining files
 COPY . .
-
-# No port exposed because it's a Discord bot
-# EXPOSE 3000
 
 # Start the bot
 CMD ["yarn", "start"]
