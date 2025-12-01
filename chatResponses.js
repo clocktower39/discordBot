@@ -31,6 +31,7 @@ module.exports = (client) =>
       handleBeautyCommand(msg);
       handleChachiCommand(msg);
       handleBlowMeCommand(msg);
+      handleIzzyAlaskaCommand(msg);
     }
   });
 
@@ -46,9 +47,9 @@ function handleHowdyCommand(msg, regex) {
 // Function to handle the "btc" command
 async function handleBtcCommand(msg, regex) {
   if (/btc|bitcoin/i.test(msg.content)) {
-    const btcPrice = await axios
-      .get("https://api.coindesk.com/v1/bpi/currentprice.json")
-      .then((data) => data.data.bpi.USD.rate);
+    const btcPrice = await fetch("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,JPY,EUR")
+      .then(res => res.json())
+      .then((data) => data.USD);
     msg.reply("$" + btcPrice);
   }
 }
@@ -348,6 +349,14 @@ function handleBlowMeCommand(msg) {
   if (/no no blow me|blow me/i.test(msg.content)) {
     msg.channel.send({
       files: [{ attachment: "./img/nonoblowme.jpg", name: "nonoblowme.jpg" }],
+    });
+  }
+}
+
+function handleIzzyAlaskaCommand(msg) {
+  if (/rock/i.test(msg.content) && /hard/i.test(msg.content)) {
+    msg.channel.send({
+      files: [{ attachment: "./img/rock_hard.png" }],
     });
   }
 }
