@@ -1,4 +1,6 @@
 const cron = require('node-cron');
+const GUILD_ID = process.env.GUILD_ID;
+const CHANNEL_ID = process.env.CHANNEL_ID;
 
 module.exports = (client) => {
   const birthdays = [
@@ -18,7 +20,7 @@ module.exports = (client) => {
     { memberId: "884524352006160414", date: "00 00 10 13 08", message: "Happy Birthday Alyssa!!!!!!!!" },
     { memberId: "445733650080727061", date: "00 00 10 31 08", message: "Happy Birthday Connor!!!!!!!!" },
     { memberId: "1096243220779905065", date: "00 00 10 02 09", message: "Happy Birthday Kat Arena!!!!!!!!" },
-    { memberId: "596172368397860866", date: "00 03 11 07 09", message: "Michael is still lame and idk if he still can see me or not but i guess Happy Birthday!!!!" },
+    { memberId: "596172368397860866", date: "00 03 11 07 09", message: "Happy Birthday Michael. You're still lame ;)" },
     { memberId: "807719442943311892", date: "00 03 11 07 09", message: "Happy Birthday Gage!!!!!!!!" },
     { memberId: "522883554729000961", date: "00 00 03 20 09", message: "Happy Birthday Trysten!!!!!!!!" },
     { memberId: "531261983878807553", date: "00 05 12 14 10", message: "Happy Birthday Sepsey!!!!!!!!" },
@@ -34,23 +36,34 @@ module.exports = (client) => {
     { memberId: "707333871783641158", date: "00 00 10 30 12", message: "Happy Birthday Zach!!!!!!!!" },
   ];
 
-  const holidays = [ 
-    { date: "00 00 00 01 01", message: "Happy New Year!!!!!!" },
+  const holidays = [
+    { date: "00 00 00 01 01", message: "Happy New Year!!!!!! \n https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHR0dHp1MWpqbWtmbHM4OXl6ZXMyemtmdTltNXZuNmIyYzFuNmhycSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/s2qXK8wAvkHTO/giphy.gif" },
     { date: "00 00 06 02 02", message: "Happy Groundhogs Day!!! \n https://images-ext-1.discordapp.net/external/IloRgoTTxEadf4xq_QcGs7eHnDT7sbNf_KE7C7LOOD0/https/media.tenor.com/YWArfj6Qe8YAAAPo/clock-alarm-clock.mp4" },
-   ];
+  ];
+
+  const scheduleFromDateString = (dateStr, cb) => {
+    const [second, minute, hour, day, month] = dateStr.split(" ");
+    cron.schedule(`${second} ${minute} ${hour} ${day} ${month} *`, cb, {
+      timezone: "America/Phoenix",
+    });
+  }
 
   birthdays.forEach(({ memberId, date, message }) => {
-    const [second, minute, hour, day, month] = date.split(" ");
-
-    cron.schedule(`${second} ${minute} ${hour} ${day} ${month} *`, () => {
+    scheduleFromDateString(date, () => {
       client.guilds
-        .fetch("474394822937935883")
-        .then((res) => res.members.fetch(memberId))
-        .then((data) => {
-          client.channels.cache
-            .get("604850815609339925")
-            .send(`${message} ${data.user}`);
-        });
+        .fetch(GUILD_ID)
+        .then((g) => g.members.fetch(memberId))
+        .then((member) => {
+          client.channels.cache.get(CHANNEL_ID).send(`${message} ${member.user}`);
+        })
+        .catch(console.error);
     });
   });
+
+  holidays.forEach(({ date, message }) => {
+    scheduleFromDateString(date, () => {
+      client.channels.cache.get(CHANNEL_ID).send(message).catch(console.error);
+    });
+  });
+
 };
