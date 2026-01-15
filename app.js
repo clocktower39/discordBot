@@ -35,13 +35,9 @@ chatResponses(client);
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
   cronJobs(client);
-  //   cron.schedule("00 20 16 * * *", () => {
-  //     client.channels.cache.get("604850815609339925").send("https://tenor.com/view/south-park-wann-get-high-towelie-gif-9114425");
-  //   });
 });
 
 client.on("voiceStateUpdate", async (oldState, newState) => {
-
   let date_time = new Date();
   let date = ("0" + date_time.getDate()).slice(-2);
   let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
@@ -53,29 +49,34 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 
   const member = newState.member;
 
-  if (!newState.channel) return; // Exit if the user did not join a voice channel
+  if (!member || !newState.channel) return; // Exit if the user did not join a voice channel
 
   try {
     // Fetch the guild and admin member
     const guild = await client.guilds.fetch("474394822937935883");
     const admin = await guild.members.fetch("474394193058463754");
 
-    // Fetch member presence
-    const fetchedMember = await guild.members.fetch(member.id);
+    // Fetch member presence, pulling it from the gateway when not cached.
+    let fetchedMember = guild.members.cache.get(member.id) ?? member;
+    if (!fetchedMember.presence) {
+      fetchedMember = await guild.members.fetch({ user: member.id, withPresences: true, force: true });
+    }
+    const hasPresence = Boolean(fetchedMember.presence);
     const status = fetchedMember.presence?.status;
 
-    if (status === "offline" || status === "invisible") {
+    if (!hasPresence || status === "offline" || status === "invisible") {
       // Disconnect the user
       await newState.setChannel(null);
 
       // Notify the user, admin, and log channel
-      await member.send("You have been disconnected from the voice channel for being offline or invisible.");
-      await admin.user.send(`${member.user.tag} was disconnected for being offline or invisible.`);
+      const reason = !hasPresence ? "no presence data" : status;
+      await member.send("You have been disconnected from the voice channel for being offline, invisible, or missing presence.");
+      await admin.user.send(`${member.user.tag} was disconnected for ${reason}.`);
       await client.channels.cache
         .get("604850815609339925")
-        .send(`<@${member.id}> isn't so sneaky and was disconnected from the voice channel.`);
+        .send(`<@${member.id}> was disconnected from the voice channel (${reason}).`);
       
-      console.log(`Disconnected ${member.user.tag} for being offline or invisible.`);
+      console.log(`Disconnected ${member.user.tag} for ${reason}.`);
     }
   } catch (error) {
     console.error(`Error processing voiceStateUpdate for ${member.user.tag}:`, error);
